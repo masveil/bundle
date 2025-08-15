@@ -74,6 +74,60 @@ document.addEventListener("DOMContentLoaded", () => {
       padding: 10px;
     }
     .hari-title { font-weight: bold; margin-top: 1em; margin-bottom: 0.5em; color: #336; }
+    @media (prefers-color-scheme: dark) {
+  body {
+    background: #1e1e1e;
+    color: #e0e0e0;
+  }
+
+  .nav {
+    background: #2d3e38;
+  }
+
+  .nav a {
+    background: #4d634f;
+    color: #fff;
+  }
+
+  .nav a:hover {
+    background: #6b8a6e;
+  }
+
+  table {
+    border-color: #444;
+  }
+
+  th {
+    background: #2f4f3f;
+    color: #fff;
+  }
+
+  td {
+    border-color: #444;
+  }
+
+  tr:hover td {
+    background: #2a2a2a;
+  }
+
+  tr.aktif td {
+    background: rgba(45,215,70,0.2);
+  }
+
+  .istirahat td {
+    background: #333 !important;
+    color: #aaa;
+  }
+
+  .hari-title {
+    color: #8fdc8f;
+  }
+
+  h3 {
+    color: #8de1c5;
+  }
+}
+
   `;
   document.head.appendChild(style);
 
@@ -122,3 +176,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
