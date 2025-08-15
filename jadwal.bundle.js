@@ -77,78 +77,48 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
   document.head.appendChild(style);
 
-  // Modal tombol jadwal
-  const btn = document.getElementById('btn-jadwal');
-  const dlg = document.getElementById('modal-jadwal');
-  const content = document.getElementById('jadwal-content');
+  // Fungsi toggle interaktif
+  function pasangEventGuruToggle() {
+    let lastOpenedGuruId = null;
+    document.querySelectorAll(".guru-row").forEach(row => {
+      row.addEventListener("click", () => {
+        const guruId = row.getAttribute("data-guru");
+        const detail = document.querySelector('tr[data-detail="' + guruId + '"]');
+        const content = detail?.querySelector(".detail-content");
+        const isOpen = content?.classList.contains("open");
 
-  if (btn && dlg && content) {
-    btn.addEventListener('click', async (e) => {
+        // Tutup semua
+        document.querySelectorAll(".detail-content").forEach(dc => dc.classList.remove("open"));
+        document.querySelectorAll(".detail-row").forEach(r => r.style.display = "none");
+
+        if (!isOpen) {
+          detail.style.display = "table-row";
+          setTimeout(() => {
+            content.classList.add("open");
+          }, 10);
+          lastOpenedGuruId = guruId;
+        } else {
+          lastOpenedGuruId = null;
+        }
+      });
+    });
+  }
+
+  // Jalankan pertama kali
+  pasangEventGuruToggle();
+
+  // Support AJAX navigasi antar hari di halaman utama Worker
+  document.addEventListener("click", function (e) {
+    const link = e.target.closest("a[data-hari]");
+    if (link) {
       e.preventDefault();
-      content.innerHTML = 'Memuat jadwal…';
-      dlg.showModal();
-      try {
-        const resp = await fetch('https://jadwal.maarifdh.sch.id/embed', { credentials: 'omit' });
-        if (!resp.ok) throw new Error('Gagal memuat');
-        const html = await resp.text();
-        content.innerHTML = html;
-      } catch (err) {
-        content.innerHTML = '<p>Maaf, jadwal tidak bisa dimuat sekarang.</p>';
-      }
-    });
-
-    document.addEventListener('keydown', (ev) => {
-      if (ev.key === 'Escape' && typeof dlg.close === 'function') dlg.close();
-    });
-  }
-
-  // Tambahan: menu-button open in new tab
-  document.querySelectorAll('.menu-button').forEach(link => {
-    if (link.dataset.newtab !== "false") {
-      link.setAttribute('target', '_blank');
-      link.setAttribute('rel', 'noopener noreferrer');
+      const hari = link.getAttribute("data-hari");
+      fetch("?hari=" + hari + "&mode=html")
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById("content").innerHTML = html;
+          pasangEventGuruToggle(); // ulangi toggle
+        });
     }
-  });
-
-  // Optional: background slider & progress bar (kalau dipakai)
-  const imgEl = document.getElementById("slide-gambar");
-  const fillEl = document.querySelector(".progress-fill");
-
-  if (imgEl && fillEl) {
-    const gambarList = [
-      "https://ik.imagekit.io/maarifdh/gambar/1.jpg",
-      "https://ik.imagekit.io/maarifdh/gambar/2.jpg",
-      "https://ik.imagekit.io/maarifdh/gambar/3.jpg",
-      "https://ik.imagekit.io/maarifdh/gambar/5.jpg",
-      "https://ik.imagekit.io/maarifdh/gambar/6.jpg",
-      "https://ik.imagekit.io/maarifdh/gambar/7.jpg"
-    ];
-    let index = 0;
-
-    function mulaiProgress() {
-      fillEl.style.transition = "none";
-      fillEl.style.width = "0%";
-      void fillEl.offsetWidth;
-      fillEl.style.transition = "width 4s linear";
-      fillEl.style.width = "100%";
-    }
-
-    function gantiSlide() {
-      imgEl.classList.add("fade-out");
-      setTimeout(() => {
-        index = (index + 1) % gambarList.length;
-        imgEl.src = gambarList[index];
-        imgEl.classList.remove("fade-out");
-      }, 300);
-      mulaiProgress();
-    }
-
-    mulaiProgress();
-    setInterval(gantiSlide, 4000);
-  }
-
-  // Fade-in body (optional)
-  window.addEventListener("load", () => {
-    document.body.style.opacity = "1";
   });
 });
