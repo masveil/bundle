@@ -67,10 +67,15 @@ async function exportSelectedToXLSX_Styled(){
     const buf  = await resp.arrayBuffer();
     const ext  = LOGO_URL.toLowerCase().endsWith('.png') ? 'png' : 'jpeg';
     const imgId = wb.addImage({ buffer: buf, extension: ext });
+    const PX_PER_CM = 37.7952755906;
+    const cm = v => Math.round(v * PX_PER_CM);
+
+    // contoh:
     ws.addImage(imgId, {
-      tl:  { col: 0, row: 0 },       // pojok A1
-      ext: { width: 120, height: 120 } // atur ukuran di sini (px)
+      tl:  { col: 0.16, row: 0.5 },
+      ext: { width: cm(2.75), height: cm(2.5) }
     });
+
   }catch(_){}
 
   // Garis tebal 1 di bawah header (baris 7)
