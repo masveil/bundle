@@ -5,6 +5,170 @@
     hoverColor: "#f0f8ff",
     textColor: "#333",
     borderRadius: "8px",
+    width: "250px", // Bisa pakai '100%' biar ngikutin container
+    bgContainer: "#ffffff"
+  };
+
+  const style = document.createElement('style');
+  style.textContent = `
+    .custom-select-wrapper {
+      position: relative;
+      display: inline-block;
+      width: ${theme.width};
+      font-family: inherit;
+    }
+
+    /* Ini trigger yang tampil menggantikan select asli */
+    .select-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: ${theme.bgContainer};
+      border: 1px solid ${theme.borderColor};
+      border-radius: ${theme.borderRadius};
+      cursor: pointer;
+      font-size: 14px;
+      color: ${theme.textColor};
+      transition: all 0.2s;
+    }
+
+    .select-trigger:after {
+      content: '▼';
+      font-size: 10px;
+      margin-left: 10px;
+      color: #999;
+    }
+
+    /* Gaya Dropdown yang Wina mau fokusin */
+    .custom-options {
+      position: absolute;
+      top: calc(100% + 5px); 
+      left: 0; right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: ${theme.borderRadius};
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      overflow-y: auto;
+      max-height: 200px;
+      display: none;
+      z-index: 9999;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .custom-options.open { display: block; }
+
+    .custom-option {
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .custom-option:hover {
+      background: ${theme.primaryColor};
+      color: white;
+    }
+
+    .custom-option.selected {
+      background: ${theme.hoverColor};
+      color: ${theme.primaryColor};
+      font-weight: bold;
+    }
+  `;
+  document.head.appendChild(style);
+
+  class CustomSelect {
+    constructor(select) {
+      this.select = select;
+      this.init();
+    }
+
+    init() {
+      // Sembunyiin select asli
+      this.select.style.display = "none";
+
+      this.wrapper = document.createElement("div");
+      this.wrapper.className = "custom-select-wrapper";
+
+      // Trigger sebagai pengganti visual
+      this.trigger = document.createElement("div");
+      this.trigger.className = "select-trigger";
+      this.trigger.innerHTML = `<span>${this.select.options[this.select.selectedIndex]?.text || "Pilih"}</span>`;
+
+      this.optionsList = document.createElement("div");
+      this.optionsList.className = "custom-options";
+
+      this.renderOptions();
+
+      this.wrapper.appendChild(this.trigger);
+      this.wrapper.appendChild(this.optionsList);
+      this.select.parentNode.insertBefore(this.wrapper, this.select.nextSibling);
+
+      this.trigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        CustomSelect.closeAll(this.optionsList);
+        this.optionsList.classList.toggle("open");
+      });
+    }
+
+    renderOptions() {
+      this.optionsList.innerHTML = '';
+      Array.from(this.select.options).forEach(opt => {
+        const customOpt = document.createElement("div");
+        customOpt.className = "custom-option";
+        if (opt.selected) customOpt.classList.add("selected");
+        customOpt.innerText = opt.text;
+
+        customOpt.addEventListener("click", () => {
+          this.select.value = opt.value;
+          this.trigger.querySelector("span").innerText = opt.text;
+          this.optionsList.querySelectorAll(".custom-option").forEach(el => el.classList.remove("selected"));
+          customOpt.classList.add("selected");
+          this.optionsList.classList.remove("open");
+          
+          // Trigger event change biar script lain tau kalau ada perubahan
+          this.select.dispatchEvent(new Event("change"));
+        });
+        this.optionsList.appendChild(customOpt);
+      });
+    }
+
+    static closeAll(except) {
+      document.querySelectorAll(".custom-options").forEach(el => {
+        if (el !== except) el.classList.remove("open");
+      });
+    }
+  }
+
+  // Inisialisasi
+  const init = () => {
+    document.querySelectorAll("select").forEach(s => {
+      if (!s.dataset.customized) {
+        new CustomSelect(s);
+        s.dataset.customized = "true";
+      }
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+  window.addEventListener("click", () => CustomSelect.closeAll());
+})();(function () {
+  const theme = {
+    primaryColor: "#3498db",
+    borderColor: "#0006",
+    hoverColor: "#f0f8ff",
+    textColor: "#333",
+    borderRadius: "8px",
     width: "250px",
     bgContainer: "#ffffff"
   };
