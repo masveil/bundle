@@ -3,6 +3,7 @@
   // --- KONFIGURASI WARNA & STYLE (Bisa diubah-ubah di sini) ---
   const theme = {
     primaryColor: "#3498db",
+    borderColor: "#0006"
     hoverColor: "#f0f8ff",
     textColor: "#333",
     borderRadius: "8px",
@@ -18,19 +19,28 @@
       display: inline-block;
       user-select: none;
       width: ${theme.width};
-      font-family: sans-serif;
+      font-family: inherit;
       color: ${theme.textColor};
+      font-size: 14px;
     }
     .select-trigger {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 15px;
+      padding: 8px;
       background: ${theme.bgContainer};
-      border: 2px solid ${theme.primaryColor};
+      border: 1px solid ${theme.borderColor};
       border-radius: ${theme.borderRadius};
       cursor: pointer;
       transition: all 0.3s ease;
+      margin: 0;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    }
+    .select-trigger:focus {
+      outline: none !important;
+      border-color: ${theme.primaryColor} !important;
+      box-shadow: 0 0 0 4px color-mix(in srgb, ${theme.primaryColor}, transparent 80%), 0 1px 5px rgba(0, 0, 0, 0.1) !important;
     }
     .custom-options {
       position: absolute;
@@ -39,13 +49,14 @@
       border: 1px solid #ddd;
       border-radius: ${theme.borderRadius};
       margin-top: 5px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+      overflow: auto;
       display: none;
       z-index: 999;
     }
     .custom-options.open { display: block; }
     .custom-option {
-      padding: 10px 15px;
+      padding: 8px 10px;
       display: block;
       cursor: pointer;
     }
@@ -55,7 +66,6 @@
     }
     .custom-option.selected {
       background: ${theme.hoverColor};
-      font-weight: bold;
       color: ${theme.primaryColor};
     }
   `;
