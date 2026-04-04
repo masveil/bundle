@@ -3,7 +3,7 @@
   // --- KONFIGURASI WARNA & STYLE (Bisa diubah-ubah di sini) ---
   const theme = {
     primaryColor: "#3498db",
-    borderColor: "#0006"
+    borderColor: "#0006",
     hoverColor: "#f0f8ff",
     textColor: "#333",
     borderRadius: "8px",
